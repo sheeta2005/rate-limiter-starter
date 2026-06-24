@@ -1,0 +1,42 @@
+# IDEA 配置文件
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.c9/
+*.launch
+.settings/
+
+# Maven 编译产物
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# 编译class
+*.class
+bin/
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件、系统文件
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+
+# 测试报告
+jacoco.exec
