@@ -1,0 +1,4 @@
+# Spring Boot 3.x 新版自动装配注册文件（替代旧版spring.factories）
+# 格式：每行一个自动配置类的全限定名
+# Spring Boot启动时会自动扫描此文件并加载列出的配置类
+com.limiter.config.RateLimiterAutoConfiguration
