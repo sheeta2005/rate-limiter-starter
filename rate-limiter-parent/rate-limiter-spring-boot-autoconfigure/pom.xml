@@ -3,6 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- 继承父工程，自动获取JDK21、SpringBoot3.2.8版本信息 -->
     <parent>
         <groupId>com.limiter</groupId>
         <artifactId>rate-limiter-parent</artifactId>
@@ -11,6 +13,7 @@
     </parent>
 
     <artifactId>rate-limiter-spring-boot-autoconfigure</artifactId>
+    <description>限流器核心自动装配模块：包含注解、切面、Lua脚本等全部业务逻辑</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -19,9 +22,11 @@
     </properties>
 
     <dependencies>
+        <!-- Spring Boot基础启动器：提供自动装配核心能力 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <!-- 排除actuator避免安全漏洞 -->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -29,13 +34,18 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Spring AOP支持：用于实现@RateLimiter注解的切面拦截 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
+        <!-- Spring Data Redis：集成Redis操作，底层使用Lettuce客户端 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <!-- 排除actuator避免安全漏洞 -->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>

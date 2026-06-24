@@ -7,38 +7,47 @@
     <groupId>com.limiter</groupId>
     <artifactId>rate-limiter-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <!-- 父工程打包类型为pom，用于聚合子模块和统一依赖管理 -->
     <packaging>pom</packaging>
+
+    <!-- 声明子模块 -->
     <modules>
         <module>rate-limiter-spring-boot-autoconfigure</module>
         <module>rate-limiter-spring-boot-starter</module>
     </modules>
 
     <properties>
+        <!-- 统一JDK版本为21 -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Spring Boot版本号统一管理 -->
+        <spring-boot.version>3.2.8</spring-boot.version>
+        <!-- Netty版本（修复CVE安全漏洞） -->
+        <netty.version>4.1.110.Final</netty.version>
     </properties>
 
+    <!-- 依赖版本管控：子模块继承后无需声明版本号 -->
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Boot BOM：锁定全部Spring Boot相关依赖版本 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.2.8</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
 
+            <!-- Netty BOM：修复已知CVE安全漏洞 -->
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.110.Final</version>
+                <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
-
-
     </dependencyManagement>
 
 </project>

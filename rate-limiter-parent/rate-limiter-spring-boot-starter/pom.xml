@@ -3,6 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- 继承父工程，统一版本管理 -->
     <parent>
         <groupId>com.limiter</groupId>
         <artifactId>rate-limiter-parent</artifactId>
@@ -11,6 +13,7 @@
     </parent>
 
     <artifactId>rate-limiter-spring-boot-starter</artifactId>
+    <description>限流器空启动器包：遵循Spring Boot Starter设计规范，仅依赖autoconfigure模块，无业务代码</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -19,6 +22,7 @@
     </properties>
 
     <dependencies>
+        <!-- 仅依赖自动装配模块，符合Starter「空壳」设计规范 -->
         <dependency>
             <groupId>com.limiter</groupId>
             <artifactId>rate-limiter-spring-boot-autoconfigure</artifactId>
