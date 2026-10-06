@@ -1,0 +1,33 @@
+name: 构建与功能测试
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v4
+      - name: 配置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: 'rate-limiter-parent/**/pom.xml'
+      - name: 构建并运行真实 Redis 功能测试
+        run: mvn -B -ntp -f rate-limiter-parent/pom.xml clean verify
+      - name: 归档测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 功能测试报告
+          path: 'rate-limiter-parent/**/target/surefire-reports/*'
+          if-no-files-found: warn

@@ -6,31 +6,33 @@
 
     <groupId>com.limiter</groupId>
     <artifactId>rate-limiter-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <!-- 父工程打包类型为pom，用于聚合子模块和统一依赖管理 -->
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <!-- 声明子模块 -->
     <modules>
         <module>rate-limiter-spring-boot-autoconfigure</module>
         <module>rate-limiter-spring-boot-starter</module>
     </modules>
 
     <properties>
-        <!-- 统一JDK版本为21 -->
+        <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Spring Boot版本号统一管理 -->
-        <spring-boot.version>3.2.8</spring-boot.version>
-        <!-- Netty版本（修复CVE安全漏洞） -->
-        <netty.version>4.1.110.Final</netty.version>
+        <spring-boot.version>3.2.5</spring-boot.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
     </properties>
 
-    <!-- 依赖版本管控：子模块继承后无需声明版本号 -->
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot BOM：锁定全部Spring Boot相关依赖版本 -->
+            <!-- 单独管理测试容器依赖，以兼容当前 Docker 的 API。 -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -38,16 +40,31 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- Netty BOM：修复已知CVE安全漏洞 -->
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-bom</artifactId>
-                <version>${netty.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <!-- 保留参数名，供按名称访问参数的 SpEL 表达式使用。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>${java.version}</release>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+            <!-- BOM 只管理依赖，显式指定支持 JUnit Platform 的测试插件。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -4,30 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- 继承父工程，统一版本管理 -->
     <parent>
         <groupId>com.limiter</groupId>
         <artifactId>rate-limiter-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>rate-limiter-spring-boot-starter</artifactId>
-    <description>限流器空启动器包：遵循Spring Boot Starter设计规范，仅依赖autoconfigure模块，无业务代码</description>
-
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <description>限流器空启动器包：遵循 Spring Boot Starter 设计规范，仅依赖 autoconfigure 模块，无业务代码</description>
 
     <dependencies>
-        <!-- 仅依赖自动装配模块，符合Starter「空壳」设计规范 -->
         <dependency>
             <groupId>com.limiter</groupId>
             <artifactId>rate-limiter-spring-boot-autoconfigure</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 空 Starter 模块没有源码和测试，核心模块仍要求实际执行测试。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <failIfNoTests>false</failIfNoTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
