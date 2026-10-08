@@ -54,6 +54,7 @@ public class RateLimiterAspect {
 
     private final RateLimiterProperties properties;
 
+    //初始化限流切面
     public RateLimiterAspect(StringRedisTemplate redisTemplate,
                              RedisScript<Long> fixedWindowScript,
                              RedisScript<Long> slidingWindowScript,
@@ -64,8 +65,10 @@ public class RateLimiterAspect {
         this.properties = properties;
     }
 
+    //检查请求是否超过限流阈值
     @Around("@annotation(limiter)")
     public Object around(ProceedingJoinPoint joinPoint, RateLimiter limiter) throws Throwable {
+        //注解未指定时使用全局配置
         int limit = limiter.limit() > 0 ? limiter.limit() : properties.getDefaultLimit();
         int window = limiter.window() > 0 ? limiter.window() : properties.getDefaultWindow();
         RateLimitAlgorithm algorithm = limiter.algorithm() != RateLimitAlgorithm.DEFAULT
@@ -86,6 +89,7 @@ public class RateLimiterAspect {
         throw new RateLimitException(limiter.message());
     }
 
+    //解析限流业务键
     private String parseSpEL(ProceedingJoinPoint joinPoint, String spEL) {
         if (spEL == null || spEL.trim().isEmpty()) {
             return getDefaultKey(joinPoint);
@@ -105,6 +109,7 @@ public class RateLimiterAspect {
         }
     }
 
+    //绑定 SpEL 方法参数
     private EvaluationContext buildEvaluationContext(ProceedingJoinPoint joinPoint) {
         StandardEvaluationContext context = new StandardEvaluationContext();
 
@@ -131,17 +136,20 @@ public class RateLimiterAspect {
         return context;
     }
 
+    //生成默认限流键
     private String getDefaultKey(ProceedingJoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         return method.getDeclaringClass().getName() + "." + method.getName();
     }
 
+    //拼接 Redis 限流键
     private String buildRedisKey(String businessKey, int window, RateLimitAlgorithm algorithm) {
         // 固定窗口使用 HASH，滑动窗口使用 ZSET；不同算法与窗口分别存储。
         return properties.getKeyPrefix() + algorithm.name() + ":" + window + ":" + businessKey;
     }
 
+    //执行限流脚本
     private Long executeScript(String redisKey, int limit, int window,
                                RateLimitAlgorithm algorithm) {
         try {
@@ -162,6 +170,7 @@ public class RateLimiterAspect {
             return result;
         } catch (Exception e) {
             log.error("限流脚本执行失败 | Key: {} | Error: {}", redisKey, e.getMessage());
+            //Redis 故障时按配置放行或拒绝
             if (properties.getFailStrategy() == FailStrategy.DENY) {
                 log.warn("fail-close：Redis 故障，拒绝请求 | Key: {}", redisKey);
                 return 0L;
