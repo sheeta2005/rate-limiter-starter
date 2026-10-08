@@ -43,6 +43,7 @@ class RateLimiterIntegrationTest {
             DockerImageName.parse("redis:7.4.9"))
             .withExposedPorts(6379);
 
+    //绑定测试 Redis 地址
     @DynamicPropertySource
     static void redisProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.redis.host", redis::getHost);
@@ -54,6 +55,7 @@ class RateLimiterIntegrationTest {
     @EnableAutoConfiguration
     static class TestApplication {
 
+        //注册测试服务
         @Bean
         TestService testService() {
             return new TestService();
@@ -62,54 +64,64 @@ class RateLimiterIntegrationTest {
 
     static class TestService {
 
+        //按用户执行固定窗口限流
         @RateLimiter(key = "#userId", limit = 5, window = 60,
                 algorithm = RateLimitAlgorithm.FIXED_WINDOW)
         public String fixedByUser(String userId) {
             return "ok";
         }
 
+        //使用默认键执行固定窗口限流
         @RateLimiter(limit = 3, window = 60, algorithm = RateLimitAlgorithm.FIXED_WINDOW)
         public String fixedDefaultKey() {
             return "ok";
         }
 
+        //按用户执行滑动窗口限流
         @RateLimiter(key = "#userId", limit = 5, window = 60,
                 algorithm = RateLimitAlgorithm.SLIDING_WINDOW)
         public String slidingByUser(String userId) {
             return "ok";
         }
 
+        //使用全局默认规则限流
         @RateLimiter(key = "#userId")
         public String useGlobalDefaults(String userId) {
             return "ok";
         }
 
+        //按请求对象中的用户限流
         @RateLimiter(key = "#request.userId", limit = 5, window = 60)
         public String spelByDto(TestRequest request) {
             return "ok";
         }
 
+        //按参数位置解析限流键
         @RateLimiter(key = "#p0", limit = 1, window = 60)
         public String positionalParameter(String userId) {
             return "ok";
         }
 
+        //使用独立窗口按用户限流
         @RateLimiter(key = "#userId", limit = 1, window = 120)
         public String differentWindow(String userId) {
             return "ok";
         }
 
+        //使用一秒滑动窗口限流
         @RateLimiter(key = "#userId", limit = 1, window = 1,
                 algorithm = RateLimitAlgorithm.SLIDING_WINDOW)
         public String shortSlidingWindow(String userId) {
             return "ok";
         }
 
+        //模拟 SpEL 返回空值
         @RateLimiter(key = "#missing", limit = 1, window = 60)
         public String nullSpel() {
             return "ok";
         }
 
+        //模拟 SpEL 语法错误
         @RateLimiter(key = "#(", limit = 1, window = 60)
         public String invalidSpel() {
             return "ok";
@@ -120,10 +132,12 @@ class RateLimiterIntegrationTest {
 
         private final String userId;
 
+        //创建测试请求
         TestRequest(String userId) {
             this.userId = userId;
         }
 
+        //获取测试用户标识
         public String getUserId() {
             return userId;
         }
@@ -135,6 +149,7 @@ class RateLimiterIntegrationTest {
     @Autowired
     StringRedisTemplate redisTemplate;
 
+    //清理测试限流数据
     @BeforeEach
     void clearLimiterKeys() {
         // Redis 容器只供本测试使用，清理限流 key 以隔离每个用例。
