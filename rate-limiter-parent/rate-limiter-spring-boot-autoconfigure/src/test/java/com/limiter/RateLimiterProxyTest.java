@@ -27,10 +27,12 @@ import static org.mockito.Mockito.when;
 class RateLimiterProxyTest {
 
     interface UserService {
+        //按用户调用测试服务
         String call(String argument);
     }
 
     static class UserServiceImpl implements UserService {
+        //按用户执行限流测试
         @Override
         @RateLimiter(key = "#userId", limit = 1, window = 60)
         public String call(String userId) {
@@ -40,12 +42,14 @@ class RateLimiterProxyTest {
 
     @Configuration(proxyBeanMethods = false)
     static class ServiceConfiguration {
+        //注册用户测试服务
         @Bean
         UserService userService() {
             return new UserServiceImpl();
         }
     }
 
+    //验证接口代理读取实现方法参数名
     @Test
     void implementationParameterNamesAreUsedWithJdkProxy() {
         StringRedisTemplate template = mock(StringRedisTemplate.class);

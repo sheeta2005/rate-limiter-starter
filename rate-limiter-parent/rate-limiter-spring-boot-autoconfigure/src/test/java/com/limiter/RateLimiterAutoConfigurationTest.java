@@ -43,11 +43,13 @@ class RateLimiterAutoConfigurationTest {
     @Service
     static class TestService {
 
+        //执行限流测试请求
         @RateLimiter(limit = 3, window = 60)
         public String call() {
             return "ok";
         }
 
+        //模拟业务异常
         @RateLimiter
         public String businessFailure() {
             throw new IllegalArgumentException("业务异常");
@@ -57,12 +59,14 @@ class RateLimiterAutoConfigurationTest {
     @Configuration
     static class TestServiceConfiguration {
 
+        //注册测试服务
         @Bean
         TestService testService() {
             return new TestService();
         }
     }
 
+    //模拟 Redis 连接故障
     private StringRedisTemplate failingRedisTemplate() {
         StringRedisTemplate template = mock(StringRedisTemplate.class);
         when(template.execute(any(RedisScript.class), any(List.class), any(Object[].class)))
@@ -70,6 +74,7 @@ class RateLimiterAutoConfigurationTest {
         return template;
     }
 
+    //验证存在 Redis 模板时装配切面
     @Test
     void aspectBeanIsCreatedWhenRedisTemplatePresent() {
         contextRunner
@@ -77,12 +82,14 @@ class RateLimiterAutoConfigurationTest {
                 .run(context -> assertThat(context).hasSingleBean(RateLimiterAspect.class));
     }
 
+    //验证缺少 Redis 模板时不装配切面
     @Test
     void aspectBeanIsAbsentWhenRedisTemplateMissing() {
         contextRunner
                 .run(context -> assertThat(context).doesNotHaveBean(RateLimiterAspect.class));
     }
 
+    //验证关闭限流时不装配切面
     @Test
     void aspectBeanIsAbsentWhenDisabled() {
         contextRunner
@@ -94,6 +101,7 @@ class RateLimiterAutoConfigurationTest {
                 });
     }
 
+    //验证 Redis 故障时默认放行
     @Test
     void failsOpenByDefaultWhenRedisDown() {
         contextRunner
@@ -102,6 +110,7 @@ class RateLimiterAutoConfigurationTest {
                         context.getBean(TestService.class).call()));
     }
 
+    //验证 Redis 故障时按配置拒绝
     @Test
     void failsCloseWhenConfiguredDeny() {
         contextRunner
@@ -111,6 +120,7 @@ class RateLimiterAutoConfigurationTest {
                         context.getBean(TestService.class).call()));
     }
 
+    //验证 Redis 自动配置可装配限流切面
     @Test
     void defaultRedisAutoConfigurationCreatesAspectWithoutCustomTemplate() {
         // 真实自动配置创建 StringRedisTemplate，不手工提供模板，也不需要连接 Redis。
@@ -122,12 +132,14 @@ class RateLimiterAutoConfigurationTest {
                 });
     }
 
+    //验证缺少 Redis 依赖时正常启动
     @Test
     void absentRedisClassesDoNotBreakStartup() {
         contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.data.redis"))
                 .run(context -> assertThat(context).doesNotHaveBean(RateLimiterAspect.class));
     }
 
+    //验证脚本缺失时启动失败
     @Test
     void missingLuaResourceFailsDuringStartup() {
         // 不创建业务代理，避免类加载异常掩盖真正的脚本资源错误。
@@ -142,6 +154,7 @@ class RateLimiterAutoConfigurationTest {
                 });
     }
 
+    //验证自定义切面优先
     @Test
     void customAspectMakesAutoConfigurationBackOff() {
         RateLimiterAspect customAspect = mock(RateLimiterAspect.class);
@@ -150,6 +163,7 @@ class RateLimiterAutoConfigurationTest {
                 .run(context -> assertThat(context.getBean(RateLimiterAspect.class)).isSameAs(customAspect));
     }
 
+    //验证非法全局配置导致启动失败
     @Test
     void invalidGlobalDefaultsFailDuringStartup() {
         for (String property : List.of("rate-limiter.default-limit=0",
@@ -161,6 +175,7 @@ class RateLimiterAutoConfigurationTest {
         }
     }
 
+    //验证内置默认配置
     @Test
     void builtInDefaultsRemainAvailable() {
         contextRunner.withBean(StringRedisTemplate.class, this::failingRedisTemplate)
@@ -171,6 +186,7 @@ class RateLimiterAutoConfigurationTest {
                 });
     }
 
+    //验证业务异常正常抛出
     @Test
     void businessExceptionIsNotSwallowedByFailOpen() {
         StringRedisTemplate template = mock(StringRedisTemplate.class);
@@ -185,6 +201,7 @@ class RateLimiterAutoConfigurationTest {
                 });
     }
 
+    //验证关闭限流后不访问 Redis
     @Test
     void disabledLimiterNeverAccessesRedis() {
         StringRedisTemplate template = failingRedisTemplate();
@@ -196,6 +213,7 @@ class RateLimiterAutoConfigurationTest {
                 });
     }
 
+    //验证无效脚本结果按故障策略处理
     @Test
     void invalidScriptResultUsesConfiguredFailureStrategy() {
         StringRedisTemplate template = mock(StringRedisTemplate.class);
