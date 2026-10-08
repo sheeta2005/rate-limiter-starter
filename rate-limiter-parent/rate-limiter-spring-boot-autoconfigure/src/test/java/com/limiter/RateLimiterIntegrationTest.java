@@ -160,6 +160,7 @@ class RateLimiterIntegrationTest {
         assertThat(AopUtils.isAopProxy(service)).isTrue();
     }
 
+    //验证固定窗口超限拦截
     @Test
     void fixedWindowAllowsFiveThenBlocks() {
         for (int i = 0; i < 5; i++) {
@@ -170,6 +171,7 @@ class RateLimiterIntegrationTest {
                 .isEqualTo("6");
     }
 
+    //验证默认键的固定窗口限流
     @Test
     void fixedWindowDefaultKeyAllowsThreeThenBlocks() {
         for (int i = 0; i < 3; i++) {
@@ -178,6 +180,7 @@ class RateLimiterIntegrationTest {
         assertThrows(RateLimitException.class, () -> service.fixedDefaultKey());
     }
 
+    //验证滑动窗口超限拦截
     @Test
     void slidingWindowAllowsFiveThenBlocks() {
         for (int i = 0; i < 5; i++) {
@@ -186,6 +189,7 @@ class RateLimiterIntegrationTest {
         assertThrows(RateLimitException.class, () -> service.slidingByUser("sliding-user"));
     }
 
+    //验证全局默认规则生效
     @Test
     void globalDefaultsAreApplied() {
         for (int i = 0; i < 3; i++) {
@@ -196,6 +200,7 @@ class RateLimiterIntegrationTest {
                 .isEqualTo(3L);
     }
 
+    //验证 SpEL 解析对象属性
     @Test
     void spelResolvesDtoProperty() {
         TestRequest request = new TestRequest("spel-user");
@@ -205,6 +210,7 @@ class RateLimiterIntegrationTest {
         assertThrows(RateLimitException.class, () -> service.spelByDto(request));
     }
 
+    //验证固定窗口切换后重置计数
     @Test
     void fixedWindowResetsAfterRollover() {
         for (int i = 0; i < 5; i++) {
@@ -220,6 +226,7 @@ class RateLimiterIntegrationTest {
         assertThat(redisTemplate.getExpire(key)).isPositive();
     }
 
+    //验证滑动窗口过期后恢复放行
     @Test
     void slidingWindowResetsAfterWindowPasses() throws InterruptedException {
         service.shortSlidingWindow("reset-sliding");
@@ -230,6 +237,7 @@ class RateLimiterIntegrationTest {
         assertDoesNotThrow(() -> service.shortSlidingWindow("reset-sliding"));
     }
 
+    //验证不同用户的限流额度独立
     @Test
     void differentUsersHaveIndependentLimits() {
         for (int i = 0; i < 5; i++) {
@@ -239,6 +247,7 @@ class RateLimiterIntegrationTest {
         assertDoesNotThrow(() -> service.fixedByUser("user-b"));
     }
 
+    //验证不同算法和窗口的限流键独立
     @Test
     void algorithmsAndWindowsUseIndependentKeys() {
         for (int i = 0; i < 5; i++) {
@@ -251,6 +260,7 @@ class RateLimiterIntegrationTest {
         assertThrows(RateLimitException.class, () -> service.differentWindow("shared-user"));
     }
 
+    //验证位置参数可区分用户
     @Test
     void positionalSpelSeparatesUsers() {
         service.positionalParameter("pos-a");
@@ -258,6 +268,7 @@ class RateLimiterIntegrationTest {
         assertDoesNotThrow(() -> service.positionalParameter("pos-b"));
     }
 
+    //验证对象属性可区分用户
     @Test
     void dtoSpelSeparatesUsers() {
         for (int i = 0; i < 5; i++) {
@@ -267,6 +278,7 @@ class RateLimiterIntegrationTest {
         assertDoesNotThrow(() -> service.spelByDto(new TestRequest("dto-b")));
     }
 
+    //验证 SpEL 异常或空值时使用默认键
     @Test
     void invalidOrNullSpelFallsBackToMethodKey() {
         service.nullSpel();
@@ -275,6 +287,7 @@ class RateLimiterIntegrationTest {
         assertThrows(RateLimitException.class, service::invalidSpel);
     }
 
+    //验证滑动窗口只清理过期请求
     @Test
     void slidingWindowOnlyRemovesExpiredRequests() {
         Long nowUs = redisTemplate.execute(new DefaultRedisScript<>(
