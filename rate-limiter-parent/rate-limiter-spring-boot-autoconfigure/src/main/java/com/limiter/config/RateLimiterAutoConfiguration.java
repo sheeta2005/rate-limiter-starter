@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 @EnableConfigurationProperties(RateLimiterProperties.class)
 public class RateLimiterAutoConfiguration {
 
+    //装配限流切面
     @Bean
     @ConditionalOnMissingBean
     public RateLimiterAspect rateLimiterAspect(StringRedisTemplate stringRedisTemplate,
@@ -45,6 +46,7 @@ public class RateLimiterAutoConfiguration {
                 properties);
     }
 
+    //加载限流脚本
     private static RedisScript<Long> loadScript(String path) {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         // 初始化时读取脚本并缓存内容，资源缺失直接阻止限流组件启动。

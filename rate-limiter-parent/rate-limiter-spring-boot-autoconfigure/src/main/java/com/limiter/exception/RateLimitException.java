@@ -12,6 +12,7 @@ package com.limiter.exception;
  */
 public class RateLimitException extends RuntimeException {
 
+    //创建限流异常
     public RateLimitException(String message) {
         super(message);
     }

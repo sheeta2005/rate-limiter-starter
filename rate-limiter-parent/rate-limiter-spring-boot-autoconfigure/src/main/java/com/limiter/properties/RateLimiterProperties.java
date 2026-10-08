@@ -54,50 +54,62 @@ public class RateLimiterProperties implements InitializingBean {
         }
     }
 
+    //获取限流开关
     public boolean isEnabled() {
         return enabled;
     }
 
+    //设置限流开关
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    //获取限流键前缀
     public String getKeyPrefix() {
         return keyPrefix;
     }
 
+    //设置限流键前缀
     public void setKeyPrefix(String keyPrefix) {
         this.keyPrefix = keyPrefix;
     }
 
+    //获取默认限流阈值
     public int getDefaultLimit() {
         return defaultLimit;
     }
 
+    //设置默认限流阈值
     public void setDefaultLimit(int defaultLimit) {
         this.defaultLimit = defaultLimit;
     }
 
+    //获取默认窗口秒数
     public int getDefaultWindow() {
         return defaultWindow;
     }
 
+    //设置默认窗口秒数
     public void setDefaultWindow(int defaultWindow) {
         this.defaultWindow = defaultWindow;
     }
 
+    //获取默认限流算法
     public RateLimitAlgorithm getDefaultAlgorithm() {
         return defaultAlgorithm;
     }
 
+    //设置默认限流算法
     public void setDefaultAlgorithm(RateLimitAlgorithm defaultAlgorithm) {
         this.defaultAlgorithm = defaultAlgorithm;
     }
 
+    //获取 Redis 故障策略
     public FailStrategy getFailStrategy() {
         return failStrategy;
     }
 
+    //设置 Redis 故障策略
     public void setFailStrategy(FailStrategy failStrategy) {
         this.failStrategy = failStrategy;
     }
