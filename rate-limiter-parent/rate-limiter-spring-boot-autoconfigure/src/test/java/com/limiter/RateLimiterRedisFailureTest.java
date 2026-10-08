@@ -30,6 +30,7 @@ class RateLimiterRedisFailureTest {
             .withExposedPorts(6379);
 
     static class TestService {
+        //执行故障测试请求
         @RateLimiter(limit = 100, window = 60)
         public String call() {
             return "正常执行";
@@ -38,12 +39,14 @@ class RateLimiterRedisFailureTest {
 
     @Configuration(proxyBeanMethods = false)
     static class ServiceConfiguration {
+        //注册故障测试服务
         @Bean
         TestService testService() {
             return new TestService();
         }
     }
 
+    //验证真实 Redis 断连时的故障策略
     @Test
     void realRedisOutageHonorsBothFailureStrategies() {
         new ApplicationContextRunner()
