@@ -1,14 +1,7 @@
 package com.limiter.annotation;
 
 /**
- * 限流算法类型
- * <p>
- * FIXED_WINDOW 为固定窗口计数器，SLIDING_WINDOW 为滑动窗口（基于 Redis ZSET）。
- * DEFAULT 表示注解未指定算法，回退到全局配置 rate-limiter.default-algorithm。
- * </p>
- *
- * @author limiter
- * @since 1.0.0
+ * 限流算法类型：FIXED_WINDOW 固定窗口，SLIDING_WINDOW 滑动窗口，DEFAULT 回退全局配置
  */
 public enum RateLimitAlgorithm {
 

@@ -18,14 +18,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 限流器自动配置类
- * <p>
- * 通过 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 注册。
- * 仅在 classpath 存在 Redis、容器中存在 StringRedisTemplate 且 rate-limiter.enabled 不为 false 时装配。
- * </p>
- *
- * @author limiter
- * @since 1.0.0
+ * 限流器自动配置类：仅在 Redis 就绪且未关闭时装配限流切面
  */
 @AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
 @ConditionalOnClass(StringRedisTemplate.class)

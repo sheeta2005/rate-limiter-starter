@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>rate-limiter-spring-boot-starter</artifactId>
-    <description>限流器空启动器包：遵循 Spring Boot Starter 设计规范，仅依赖 autoconfigure 模块，无业务代码</description>
+    <description>限流器空启动器包</description>
 
     <dependencies>
         <dependency>

@@ -27,14 +27,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * 限流 AOP 切面
- * <p>
- * 拦截标记了 {@link RateLimiter} 的方法，按算法选择对应 Lua 脚本执行原子限流。
- * 两种算法都在 Lua 内以 Redis 服务端时间为准，避免依赖应用实例时钟。
- * </p>
- *
- * @author limiter
- * @since 1.0.0
+ * 限流 AOP 切面：拦截 @RateLimiter 标注的方法，按算法选择 Lua 脚本执行原子限流
  */
 @Aspect
 public class RateLimiterAspect {

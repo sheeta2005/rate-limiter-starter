@@ -5,25 +5,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * 限流器全局配置属性
- * <p>
- * 绑定 application.yml 中 rate-limiter 前缀的配置项。
- * 配置优先级：注解属性 &gt; 全局配置 &gt; 硬编码默认值。
- * </p>
- *
- * <h3>配置示例：</h3>
- * <pre>{@code
- * rate-limiter:
- *   enabled: true
- *   key-prefix: "rate_limit:"
- *   default-limit: 100
- *   default-window: 60
- *   default-algorithm: fixed_window
- *   fail-strategy: pass
- * }</pre>
- *
- * @author limiter
- * @since 1.0.0
+ * 限流器全局配置属性：绑定 application.yml 中 rate-limiter 前缀的配置项
  */
 @ConfigurationProperties(prefix = "rate-limiter")
 public class RateLimiterProperties implements InitializingBean {
