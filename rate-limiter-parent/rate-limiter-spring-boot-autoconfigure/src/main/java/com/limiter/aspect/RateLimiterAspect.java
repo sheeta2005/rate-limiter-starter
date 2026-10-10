@@ -34,15 +34,18 @@ public class RateLimiterAspect {
 
     private static final Logger log = LoggerFactory.getLogger(RateLimiterAspect.class);
 
+    //SpEL 表达式解析器
     private static final ExpressionParser PARSER = new SpelExpressionParser();
 
+    //参数名发现器
     private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER =
             new DefaultParameterNameDiscoverer();
 
+    //redis模板类
     private final StringRedisTemplate redisTemplate;
 
+    //脚本
     private final RedisScript<Long> fixedWindowScript;
-
     private final RedisScript<Long> slidingWindowScript;
 
     private final RateLimiterProperties properties;
@@ -104,11 +107,15 @@ public class RateLimiterAspect {
 
     //绑定 SpEL 方法参数
     private EvaluationContext buildEvaluationContext(ProceedingJoinPoint joinPoint) {
+
+        //变量仓库
         StandardEvaluationContext context = new StandardEvaluationContext();
 
+
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        // 接口代理暴露的方法可能没有参数名，优先读取实现方法。
+        // 原始对象的类中找到对应最具体的实现方法
         Method method = AopUtils.getMostSpecificMethod(signature.getMethod(), joinPoint.getTarget().getClass());
+
         String[] parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(method);
         if (parameterNames == null) {
             parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(signature.getMethod());
